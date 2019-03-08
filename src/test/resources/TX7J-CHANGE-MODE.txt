@@ -1,0 +1,185 @@
+Feature: Forbearance Cum Max Group Parameters � TX7J 
+
+Background:
+Given user on the "TX7J " transaction
+
+
+     
+#Positive Scenarios:
+Scenario Outline: scenario:1: Change  FORBEARANCE CUM MAX GROUP SEARCH  - User enters valid values 
+Given the user is on "TXX70 FORBEARANCE CUM MAX GROUP SEARCH" screen in "Change" mode
+And "TXX70 FORBEARANCE CUM MAX GROUP SEARCH" screen displays following fields
+| CUM MAX GROUP |
+When the user on "TXX70 FORBEARANCE CUM MAX GROUP SEARCH" screen enters valid values on following fields 
+| CUM MAX GROUP | <CUM MAX GROUP> |
+And the user clicks "Enter"
+Then "TXX6Z FORBEARANCE CUM MAX GROUP SELECTION" screen displays
+
+Examples:
+| CUM MAX GROUP |
+|               |
+
+
+
+
+
+#Negative Scenarios:
+Scenario Outline: scenario:2: Change  FORBEARANCE CUM MAX GROUP SEARCH - User enters invalid values 
+Given the user is on "TXX70 FORBEARANCE CUM MAX GROUP SEARCH" screen in "Change" mode
+And "TXX70 FORBEARANCE CUM MAX GROUP SEARCH" screen displays following fields
+| CUM MAX GROUP |
+When the user on "TXX70 FORBEARANCE CUM MAX GROUP SEARCH" screen enters invalid values on following fields 
+| CUM MAX GROUP | <CUM MAX GROUP> |
+And the user clicks "Enter"
+Then "TXX70 FORBEARANCE CUM MAX GROUP SEARCH" screen displays following message "<message>"
+
+
+Examples:
+| CUM MAX GROUP | message |
+|  123          | 01019 |
+|  ABC          | 01019 |
+|  @123         | 01019 |
+| TEST          | 01019 |
+##Note :
+#01019 : ENTRED KEY NOT FOUND
+
+
+
+
+
+#Positive Scenarios:
+Scenario Outline: scenario:3: Change  FORBEARANCE CUM MAX GROUP SEARCH  - User enters valid values 
+Given the user is on "TXX6Z FORBEARANCE CUM MAX GROUP SELECTION" screen in "Change" mode
+And "TXX6Z FORBEARANCE CUM MAX GROUP SELECTION" screen displays following fields
+| SELECTION |
+When the user on "TXX6Z FORBEARANCE CUM MAX GROUP SELECTION" screen enters valid values on following fields 
+| SELECTION | <SELECTION> |
+And the user clicks "Enter"
+Then "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays
+
+Examples:
+| SELECTION |
+| 2         |
+
+
+
+#Negative Scenarios: 
+Scenario Outline: scenario:4: Change  FORBEARANCE CUM MAX GROUP SEARCH  - User enters invalid values 
+Given the user is on "TXX6Z FORBEARANCE CUM MAX GROUP SELECTION" screen in "Change" mode
+And "TXX6Z FORBEARANCE CUM MAX GROUP SELECTION" screen displays following fields
+| SELECTION |
+When the user on "TXX6Z FORBEARANCE CUM MAX GROUP SELECTION" screen enters invalid values on following fields 
+| SELECTION | <SELECTION> |
+And the user clicks "Enter"
+Then "TXX6Z FORBEARANCE CUM MAX GROUP SELECTION" screen displays following message "<message>"
+
+Examples:
+| SELECTION | message |
+| 15       | 01032    |
+| @s       | 01032    |
+|          | 01027    |
+
+#NOTE :
+#01032 : SELECTION MUST CORRESPOND TO A DISPLAYED KEY
+#01027 : SELECTION MUST BE ENTRED
+
+
+
+##Negative Scenarios:
+Scenario Outline: scenario:5: Change  FORBEARANCE CUM MAX GROUP SEARCH  - User enters invalid values 
+Given the user is on "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen in "Change" mode
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following message "01022"
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen contains valid values on following fields from previous screen
+| CUM MAX GROUP | TEST1 |
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following fields as protected
+| LPD BATCH ID |
+| APPROVAL DTE |
+| EFFECTIVE START DTE |
+| STATUS       |
+| STATUS DTE   | 
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following fields
+| CUM MAX GROUP TOTAL |
+| CUM MAX GROUP UNIT |
+When the user on "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen enters valid values on following fields 
+| CUM MAX GROUP TOTAL | <CUM MAX GROUP TOTAL> |
+| CUM MAX GROUP UNIT  | <CUM MAX GROUP UNIT> |
+And the user clicks "Enter"
+Then "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following message "<message>"
+
+Examples:
+
+| CUM MAX GROUP TOTAL | CUM MAX GROUP UNIT | message |
+|  AB                 |    01              | 90004    |
+|  @A                 |    01              | 90004    |
+|                     |    01              | 90003    |
+|  40                 |    A1              | 90002    |
+|  40                 |                    | 90003    |
+|  40                 |    @1              | 90002    |
+|  4.4                 |    @1             | 01456    |
+
+
+
+#Positive Scenario:
+Scenario Outline: scenario:6: Change  FORBEARANCE CUM MAX GROUP SEARCH  - User enters valid values 
+Given the user is on "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen in "Change" mode
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following message "01022"
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen contains valid values on following fields from previous screen
+| CUM MAX GROUP | TEST1 |
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following fields as protected
+| LPD BATCH ID |
+| APPROVAL DTE |
+| EFFECTIVE START DTE |
+| STATUS       |
+| STATUS DTE   | 
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following fields
+#as not protected
+| CUM MAX GROUP TOTAL |
+| CUM MAX GROUP UNIT |
+When the user on "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen enters valid values on following fields 
+| CUM MAX GROUP TOTAL | <CUM MAX GROUP TOTAL> |
+| CUM MAX GROUP UNIT | <CUM MAX GROUP UNIT> |
+And the user clicks "Enter"
+Then "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following message "01005"
+
+Examples:
+| CUM MAX GROUP TOTAL | CUM MAX GROUP UNIT |
+| 40                  |    01              |
+
+# changing cum max group 30 t0 40
+
+
+#Positive Scenario:
+@S
+Scenario Outline: scenario:7: Change  FORBEARANCE CUM MAX GROUP SEARCH  - User enters valid values 
+Given 	the user is on "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen in "Change" mode with Higher_Value
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following message "01022"
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen contains valid values on following fields from previous screen
+| CUM MAX GROUP | TEST2 |
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following fields as protected
+| LPD BATCH ID |
+| APPROVAL DTE |
+| EFFECTIVE START DTE |
+| STATUS       |
+| STATUS DTE   | 
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following fields 
+#as not protected
+| CUM MAX GROUP TOTAL |
+| CUM MAX GROUP UNIT |
+When the user on "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen enters valid values on following fields 
+| CUM MAX GROUP TOTAL | <CUM MAX GROUP TOTAL> |
+| CUM MAX GROUP UNIT | <CUM MAX GROUP UNIT> |
+And the user clicks "Enter"
+Then "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following message "01230"
+#"01005"
+
+Examples:
+| CUM MAX GROUP TOTAL | CUM MAX GROUP UNIT |
+| 40                  |    01              |
+
+
+
+
+
+  
+
+

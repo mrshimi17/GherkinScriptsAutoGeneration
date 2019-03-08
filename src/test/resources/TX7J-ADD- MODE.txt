@@ -1,0 +1,152 @@
+Feature: Forbearance Cum Max Group Parameters � TX7J 
+
+Background:
+Given user on the "TX7J " transaction
+
+     
+#Positive Scenarios:
+Scenario Outline: scenario:1: Add  FORBEARANCE CUM MAX GROUP SEARCH  - User enters valid values 
+Given the user is on "TXX70 FORBEARANCE CUM MAX GROUP SEARCH" screen in "Add" mode
+And "TXX70 FORBEARANCE CUM MAX GROUP SEARCH" screen displays following fields
+| CUM MAX GROUP |
+When the user on "TXX70 FORBEARANCE CUM MAX GROUP SEARCH" screen enters valid values on following fields 
+| CUM MAX GROUP | <CUM MAX GROUP> |
+And the user clicks "Enter"
+Then "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays
+
+Examples:
+| CUM MAX GROUP |
+| TEST1         |
+
+
+
+#Negative Scenarios:
+Scenario Outline: scenario:2: Add  FORBEARANCE CUM MAX GROUP SEARCH - User enters invalid values 
+Given the user is on "TXX70 FORBEARANCE CUM MAX GROUP SEARCH" screen in "Add" mode
+And "TXX70 FORBEARANCE CUM MAX GROUP SEARCH" screen displays following fields
+| CUM MAX GROUP |
+When the user on "TXX70 FORBEARANCE CUM MAX GROUP SEARCH" screen enters invalid values on following fields 
+| CUM MAX GROUP | <CUM MAX GROUP> |
+And the user clicks "Enter"
+Then "TXX70 FORBEARANCE CUM MAX GROUP SEARCH" screen displays following message "<message>"
+
+#Then "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following message "<message>"
+
+
+Examples:
+| CUM MAX GROUP | message |
+| 123           | 90002 |
+|               | 01016 | 
+| ABC           | 90002 |
+| TEST          | 04223 |
+| ****          | 01017 |
+| FRB24         | 01018 |
+#Note :
+#90002 : invalid code value entred
+#01016 : key must be entred in add mode
+#04223 cum max group must be 5 characters
+
+
+
+
+
+##Negative Scenarios:
+Scenario Outline: scenario:3: Add  FORBEARANCE CUM MAX GROUP SEARCH  - User enters invalid values 
+Given the user is on "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen in "Add" mode
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following message "01021"
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen contains valid values on following fields from previous screen
+| CUM MAX GROUP | TEST1 |
+When "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following fields as protected
+| APPROVAL DTE |
+| EFFECTIVE START DTE |
+| STATUS       |
+| STATUS DTE   | 
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following fields
+| LPD BATCH ID |
+| CUM MAX GROUP TOTAL |
+| CUM MAX GROUP UNIT |
+When the user on "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen enters invalid values on following fields 
+| LPD BATCH ID |<LPD_BATCH_ID> |
+| CUM MAX GROUP TOTAL | <CUM MAX GROUP TOTAL> |
+| CUM MAX GROUP UNIT | <CUM MAX GROUP UNIT> |
+And the user clicks "Enter"
+Then "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following message "<message>"
+
+Examples:
+| LPD_BATCH_ID | CUM MAX GROUP TOTAL | CUM MAX GROUP UNIT | message  |
+|   20239320   |   AB                |   01               | 90004    |
+|   20239320   |                    |   01                | 90003    |
+|   20239320   |  30                |   A1                | 90002    |
+|              |  30                |   01                | 90003    |
+|   0000000    |  30                |   02                | 01147    |
+
+
+
+
+
+
+#Positive Scenario:
+@S
+Scenario Outline: scenario:4: Add  FORBEARANCE CUM MAX GROUP SEARCH  - User enters valid values 
+#Higher_Value means when LPD BATCH Effective date in the past
+Given 	the user is on "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen in "Add" mode with Higher_Value
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following message "01021"
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen contains valid values on following fields from previous screen
+| CUM MAX GROUP | TEST2 |
+When "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following fields as protected
+| APPROVAL DTE |
+| EFFECTIVE START DTE |
+| STATUS       |
+| STATUS DTE   | 
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following fields
+| LPD BATCH ID |
+| CUM MAX GROUP TOTAL |
+| CUM MAX GROUP UNIT |
+When the user on "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen enters valid values on following fields 
+| LPD BATCH ID | <LPD_BATCH_ID> |
+| CUM MAX GROUP UNIT | <CUM MAX GROUP UNIT> |
+| CUM MAX GROUP TOTAL | <CUM MAX GROUP TOTAL> |
+And the user clicks "Enter"
+Then "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following message "01229"
+#LPD BATCH ID EFFECTIVE DATE IN FUTURE
+
+Examples:
+| LPD_BATCH_ID | CUM MAX GROUP TOTAL | CUM MAX GROUP UNIT |
+|   20239320   |  30                |        01           |
+
+
+
+
+#Positive Scenario:
+Scenario Outline: scenario:5: Add  FORBEARANCE CUM MAX GROUP SEARCH  - User enters valid values 
+Given the user is on "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen in "Add" mode 
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following message "01021"
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen contains valid values on following fields from previous screen
+| CUM MAX GROUP | TEST1 |
+When "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following fields as protected
+| APPROVAL DTE |
+| EFFECTIVE START DTE |
+| STATUS       |
+| STATUS DTE   | 
+And "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following fields
+| LPD BATCH ID |
+| CUM MAX GROUP TOTAL |
+| CUM MAX GROUP UNIT |
+When the user on "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen enters valid values on following fields 
+| LPD BATCH ID | <LPD_BATCH_ID> |
+| CUM MAX GROUP UNIT | <CUM MAX GROUP UNIT> |
+| CUM MAX GROUP TOTAL | <CUM MAX GROUP TOTAL> |
+And the user clicks "Enter"
+Then "TXX6B FORBEARANCE CUM MAX GROUP PARAMETERS" screen displays following message "01004"
+#LPD BATCH ID EFFECTIVE DATE IN PAST
+
+Examples:
+| LPD_BATCH_ID | CUM MAX GROUP TOTAL | CUM MAX GROUP UNIT |
+|   20239379   |  30                |        01           |
+
+
+
+
+#90004 : NON- NUMERC VALUE ENTRED IN A NUMERIC FIELD
+#90003 : THIS FIELD MUST NOT BE LEFT BLANK- DATA MUST BE ENTRED
+#90002 : INVALID CODE VALUE ENTRED
