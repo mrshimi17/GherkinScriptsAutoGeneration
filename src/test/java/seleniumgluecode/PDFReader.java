@@ -166,7 +166,11 @@ public class PDFReader {
 										scenarios.add("When the user selects " + matchesFound.get(0));
 									}
 								} else if(line.contains("The following message")) {
-									scenarios.add("Then message "+matchesFound.get(1) + " displays at the bottom of the screen");
+									if(matchesFound.size() == 1) {
+										scenarios.add("Then message "+matchesFound.get(0) + " displays at the bottom of the screen");
+									} else {
+										scenarios.add("Then message "+matchesFound.get(1) + " displays at the bottom of the screen");
+									}
 								} else if(line.contains("is displayed")) {
 									if(matchesFound.size() == 2) {
 										scenarios.add("Then "+matchesFound.get(0) + " " + matchesFound.get(1) +" screen displays");
@@ -235,13 +239,21 @@ public class PDFReader {
 
 	public void createFeatureFile(String fileName, ArrayList<String> scenarios) {
 		try {
-			FileWriter fr = new FileWriter(new File("./src/test/java/Features/"+fileName+".feature"));
-			fr.write("Feature: " + fileName+" Feature");
+			File file = new File("./src/test/java/Features/"+fileName+".feature");
+			FileWriter fr = new FileWriter(file, true);
+			if(file.length() == 0) {
+				fr.write("Feature: " + fileName+" Feature");
+				fr.write("\n\n");
+				fr.write("Scenarios listed for " + fileName);
+				fr.write("\n\n");
+			} else {
+				fr.write("\n");
+			}
 			for(int cnt=0;cnt<scenarios.size();cnt++) {
 				if(cnt==0) {
-					fr.write(scenarios.get(cnt));
-				} else {
 					fr.write("\t"+scenarios.get(cnt));
+				} else {
+					fr.write("\t\t"+scenarios.get(cnt));
 				}
 				fr.write("\n");
 			}
