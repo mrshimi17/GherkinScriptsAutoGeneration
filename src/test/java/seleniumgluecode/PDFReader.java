@@ -30,7 +30,7 @@ public class PDFReader {
 
 
 		ArrayList<String> scenarios = new ArrayList<>();
-		try (PDDocument document = PDDocument.load(new File("/Users/manor/Documents/WindowsMachineBackup/IncomeTax/TopCoderProjectDetails/11thMar2019-10.14/User Manual Inputs/TX1J.pdf"))) {
+		try (PDDocument document = PDDocument.load(new File("/Users/manor/Documents/WindowsMachineBackup/IncomeTax/TopCoderProjectDetails/11thMar2019-10.14/User Manual Inputs/TX0J.pdf"))) {
 
 			document.getClass();
 
@@ -64,7 +64,7 @@ public class PDFReader {
 							scenarioStarted = false;
 							System.out.println("-----------------------------------------------------------------------------------------------");
 						}
-						if(line.equalsIgnoreCase("Add Demographic Records")) {
+						if(line.equalsIgnoreCase("Add Lender Status Information")) {
 							scenarioStarted=true;
 							scenarios.add("Scenario: " + line);
 						}
