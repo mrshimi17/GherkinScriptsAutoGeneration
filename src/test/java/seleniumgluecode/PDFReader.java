@@ -1,7 +1,10 @@
 package seleniumgluecode;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,11 +18,28 @@ public class PDFReader {
 
 	public static void main(String[] args) throws Exception {
 		PDFReader pdfReader = new PDFReader();
-		pdfReader.test();
+		//Enter data using BufferReader 
+		System.out.print("Enter pdf file/folder path: ");
+		BufferedReader reader =  new BufferedReader(new InputStreamReader(System.in)); 
+		// Reading data using readLine 
+		String filePath = reader.readLine().trim();
 
+		File dir = new File(filePath);
+		File[] directoryListing = dir.listFiles();
+		if (directoryListing != null) {
+			for (File child : directoryListing) {
+				if(child.getCanonicalPath().contains("pdf")) {
+					System.out.println("Path: " + child.getCanonicalPath());
+				}
+				pdfReader.test(filePath);
+			}
+		} else {
+			System.out.println("Path: " + filePath);
+			pdfReader.test(filePath);
+		}
 	}
 
-	public void test() throws Exception {
+	public void test(String filePath) throws Exception {
 
 		stepDefinitionList.add("On the (.+) select (.+)");
 		stepDefinitionList.add("The (.+) screen (.+) is displayed.");
@@ -28,9 +48,12 @@ public class PDFReader {
 		stepDefinitionList.add("The following message (.*) at the bottom of the screen: (.+).");
 		stepDefinitionList.add("the (.+) field(.*) enter(.+).This is a required field");
 
-
+		File file = new File(filePath);
+		if(!file.exists()) {
+			throw new Exception("File not present: " + filePath);
+		}
 		ArrayList<String> scenarios = new ArrayList<>();
-		try (PDDocument document = PDDocument.load(new File("/Users/manor/Documents/WindowsMachineBackup/IncomeTax/TopCoderProjectDetails/11thMar2019-10.14/User Manual Inputs/TX0J.pdf"))) {
+		try (PDDocument document = PDDocument.load(new File(filePath))) {
 
 			document.getClass();
 
