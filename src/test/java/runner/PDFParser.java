@@ -1,4 +1,4 @@
-package definitions;
+package runner;
 
 import java.io.BufferedReader;
 import java.io.File;
