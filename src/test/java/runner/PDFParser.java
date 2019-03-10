@@ -50,14 +50,15 @@ public class PDFParser {
 				"Add an Action Request Code", "Add Additional Action Response Codes", "Change an Action Request Code", "Delete an Action Request Code"};
 		pdfWiseScenariosMapping.put("TD00", scenarioList7);
 
-		String scenarioList8 [] = {"View Loan Detail"};
+		String scenarioList8 [] = {"LOAN DETAIL INFORMATION first", "LOAN DETAIL INFORMATION second", "LOAN DETAIL INFORMATION third"};
 		pdfWiseScenariosMapping.put("TS26", scenarioList8);
 
-		//		String scenarioList9 [] = {""};
-		//		pdfWiseScenariosMapping.put("TX7E", scenarioList9);
-		//
-		//		String scenarioList10 [] = {""};
-		//		pdfWiseScenariosMapping.put("TX1J", scenarioList10);
+		String scenarioList9 [] = {"Add Due Diligence Cycle LPD Information", "Change/View Due Diligence Cycle LPD Information", "Delete Due Diligence Cycle LPD Information"};
+		pdfWiseScenariosMapping.put("TX7E", scenarioList9);
+
+		String scenarioList10 [] = {"Add Demographic Records", "Endorser Demographic Record", "Student Demographic Record", "Reference Demographic Record",
+				"Change/View Demographic Records", "Borrower Demographic Record", "Endorser Demographic Record", ""};
+		pdfWiseScenariosMapping.put("TX1J", scenarioList10);
 	}
 
 	public void takeInputFromUser() throws Exception { 
@@ -73,9 +74,6 @@ public class PDFParser {
 				filePath = child.getCanonicalPath();
 				if(filePath.contains("pdf")) {
 					System.out.println("Processing File: " + child.getCanonicalPath());
-					if(fileName.contains("TS26") | fileName.contains("TX7E") | fileName.contains("TX1J")) {
-						continue;
-					}
 					processPDFFile(filePath, fileName);
 				}
 			}
