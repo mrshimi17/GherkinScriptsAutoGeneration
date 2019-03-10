@@ -1,8 +1,9 @@
-package seleniumgluecode;
+package definitions;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,14 +14,17 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.PDFTextStripperByArea;
 
-public class PDFReader {
+public class PDFParser {
 	ArrayList<String> matchesFound = new ArrayList<>();
 	public ArrayList<String> stepDefinitionList = new ArrayList<>();
+	public ArrayList<String> examplesList = new ArrayList<String>();
+
 	HashMap<String, String[]> pdfWiseScenariosMapping = new  HashMap<String, String[]>();
 	public static void main(String[] args) throws Exception {
-		PDFReader pdfReader = new PDFReader();
-		pdfReader.initializePrequisiteSteps();
-		pdfReader.takeInputFromUser();
+		PDFParser pdfParser = new PDFParser();
+		pdfParser.initializePrequisiteSteps();
+		pdfParser.takeInputFromUser();
+		pdfParser.generateStepDefinitions();
 	}
 
 	public void initializePrequisiteSteps() {
@@ -45,10 +49,10 @@ public class PDFReader {
 		String scenarioList7 [] = {"View Action Request Codes", "Search by Action Request Code", "Search by Action Response Code", "Search by Using Other Criteria",
 				"Add an Action Request Code", "Add Additional Action Response Codes", "Change an Action Request Code", "Delete an Action Request Code"};
 		pdfWiseScenariosMapping.put("TD00", scenarioList7);
-		//
-		//		String scenarioList8 [] = {"View Loan Detail", ""};
-		//		pdfWiseScenariosMapping.put("TS26", scenarioList8);
-		//
+
+		String scenarioList8 [] = {"View Loan Detail"};
+		pdfWiseScenariosMapping.put("TS26", scenarioList8);
+
 		//		String scenarioList9 [] = {""};
 		//		pdfWiseScenariosMapping.put("TX7E", scenarioList9);
 		//
@@ -68,30 +72,29 @@ public class PDFReader {
 				String fileName = child.getName().split("\\.")[0];
 				filePath = child.getCanonicalPath();
 				if(filePath.contains("pdf")) {
-					System.out.println("Path: " + child.getCanonicalPath());
+					System.out.println("Processing File: " + child.getCanonicalPath());
 					if(fileName.contains("TS26") | fileName.contains("TX7E") | fileName.contains("TX1J")) {
 						continue;
 					}
-					test(filePath, fileName);
+					processPDFFile(filePath, fileName);
 				}
 			}
 		} else {
-			//TODO: Need to remove this hardcoded path
-			filePath="/Users/manor/Documents/WindowsMachineBackup/IncomeTax/TopCoderProjectDetails/11thMar2019-10.14/User Manual Inputs/TXCH.pdf";
 			File file = new File(filePath);
-			System.out.println("Path: " + filePath);
-			test(filePath, file.getName().split("\\.")[0]);
+			System.out.println("Processing File: " + filePath);
+			processPDFFile(filePath, file.getName().split("\\.")[0]);
 		}
 	}
 
-	public void test(String filePath, String fileName) throws Exception {
+	public void processPDFFile(String filePath, String fileName) throws Exception {
 
-		stepDefinitionList.add("On the (.+) select (.+)");
-		stepDefinitionList.add("The (.+) screen (.+) is displayed.");
-		stepDefinitionList.add("Select (.+).");
-		stepDefinitionList.add("Enter (.+) in the (.+) field and (.+) in the (.+) field.");
-		stepDefinitionList.add("The following message (.*) at the bottom of the screen: (.+).");
-		stepDefinitionList.add("the (.+) field(.*) enter(.+).This is a required field");
+		stepDefinitionList.add("the (.+) select (.+)");
+		stepDefinitionList.add("The (.+) screen (.+) is displayed");
+		stepDefinitionList.add("Select (.+)");
+		stepDefinitionList.add("(\\d+).*press enter");
+		stepDefinitionList.add("Enter (.+) in the (.+) field and (.+) in the (.+) field");
+		stepDefinitionList.add("The following message (.*) at the bottom of the screen: (.+)");
+		stepDefinitionList.add("the (.+) field(.*) enter(.+)");
 
 		File file = new File(filePath);
 		if(!file.exists()) {
@@ -112,75 +115,73 @@ public class PDFReader {
 				String pdfFileInText = tStripper.getText(document);
 				document.close();
 
-				//System.out.println("Text:" + st);
-
 				int scenarioCounter = 0;
 				boolean scenarioStarted = false;
-				// split by whitespace
 				String lines[] = pdfFileInText.split("\\r?\\n");
 				String[] scenarioList = pdfWiseScenariosMapping.get(fileName);
+				int param=0;
 				try {
 					for (String line : lines) {
 						line = line.trim();
+						line = line.replace(".", "");
+						line = line.replace(",", "");
+						line = line.replace("This is a required field", "");
+						if(line.contains("protected") | line.contains("are populated")) {
+							continue;
+						}
 						if(line.length()==0) {
 							continue;
 						} else if(scenarioCounter < scenarioList.length-1) {
 							if(line.equalsIgnoreCase(scenarioList[scenarioCounter+1])) {
-								createFeatureFile(fileName, scenarios);
+								createFeatureFile(fileName, scenarios, examplesList);
 								scenarios.clear();
+								examplesList.clear();
 								scenarioStarted = false;
 								scenarioCounter++;
-								System.out.println("-----------------------------------------------------------------------------------------------");
+								param=0;
 							}
 						} 
 						if(line.equalsIgnoreCase(scenarioList[scenarioCounter])) {
 							scenarioStarted=true;
-							scenarios.add("Scenario: " + line);
+							scenarios.add("Scenario Outline: " + line);
 						}
-						//						if(line.equalsIgnoreCase("Change/View Lender Status Information")) {
-						//							scenarioStarted=true;
-						//							scenarios.add("Scenario: " + line);
-						//						}
 						int previousSize =0;
 						if(scenarioStarted) {
 							for(int cnt=0;cnt<stepDefinitionList.size();cnt++) {
 								matchesFound = new ArrayList<>();
 								previousSize=scenarios.size();
 								String step = stepDefinitionList.get(cnt);
-								if(line.toLowerCase().contains("press enter")) {
-									scenarios.add("And the user clicks enter");
-								} else {
-									getPatternMatches(step, line, false, 0);
-									if(matchesFound.size()==0) {
-										continue;
-									}
+								getPatternMatches(step, line, false, 0);
+								if(matchesFound.size()==0) {
+									continue;
 								}
 								if(matchesFound.size() == 4) {
-									scenarios.add("When user enters " + matchesFound.get(0) +" in the "+matchesFound.get(1) +" field");
-									scenarios.add("And user enters " + matchesFound.get(2) +" in the "+matchesFound.get(3) +" field");
+									scenarios.add("When the user enters \"<"+matchesFound.get(1)+ ">\" in the \""+matchesFound.get(1) +"\" field");
+									scenarios.add("When the user enters \"<" + matchesFound.get(3) + ">\" in the \""+matchesFound.get(3) +"\" field");
+									examplesList.add(matchesFound.get(1));
+									examplesList.add(matchesFound.get(3));
 								} else if(line.toLowerCase().contains("select")) {
 									if(matchesFound.size() == 2) {
-										scenarios.add("Given user is on the " + matchesFound.get(0) +" Screen");
-										scenarios.add("When the user on the " + matchesFound.get(0)+ " selects " + matchesFound.get(1));
+										scenarios.add("Given user is on the \"" + matchesFound.get(0) +"\" Screen");
+										scenarios.add("When the user on the \"<" + matchesFound.get(0)+ ">\" selects \"<"+matchesFound.get(1)+">\"");
+										examplesList.add(matchesFound.get(1));
 									} else {
-										scenarios.add("When the user selects " + matchesFound.get(0));
+										scenarios.add("When the user selects \"<" + matchesFound.get(0)+">\"");
 									}
-								} else if(line.contains("The following message")) {
-									if(matchesFound.size() == 1) {
-										scenarios.add("Then message "+matchesFound.get(0) + " displays at the bottom of the screen");
-									} else {
-										scenarios.add("Then message "+matchesFound.get(1) + " displays at the bottom of the screen");
-									}
+									examplesList.add(matchesFound.get(0));
+								} else if(line.contains("following message")) {
+									scenarios.add("Then message \"<message"+(++param)+">\" displays at the bottom of the screen");
+									examplesList.add("message" + param);
 								} else if(line.contains("is displayed")) {
-									if(matchesFound.size() == 2) {
-										scenarios.add("Then "+matchesFound.get(0) + " " + matchesFound.get(1) +" screen displays");
-									} else {
-										scenarios.add("Then "+matchesFound.get(0) + " screen displays");
-									}
+									scenarios.add("Then \"<"+matchesFound.get(0)+">\" screen displays");
+									examplesList.add(matchesFound.get(0));
 								} else if(line.contains("field") & line.contains("enter")) {
-									scenarios.add("When the user enters " + matchesFound.get(2)+ " in field " + matchesFound.get(0));
-								} else if(line.contains("Tab to the")) {
-									//									scenarios.add("When the user enters " + matchesFound.get(1)+ " in field " + matchesFound.get(0));
+									scenarios.add("When the user enters \"<"+matchesFound.get(0) + ">\" in field \"" + matchesFound.get(0)+"\"");
+									examplesList.add(matchesFound.get(0));
+								} else if(line.toLowerCase().contains("press enter")) {
+									if(matchesFound.size() != 0 ) {
+										scenarios.add("And the user clicks \"Enter\"");
+									}
 								}
 								int currentSize=scenarios.size();
 								if(currentSize>previousSize) {
@@ -190,7 +191,7 @@ public class PDFReader {
 						}
 					}
 
-					createFeatureFile(fileName, scenarios);
+					createFeatureFile(fileName, scenarios, examplesList);
 				} catch(Exception e) {
 					e.printStackTrace();
 				}
@@ -210,12 +211,13 @@ public class PDFReader {
 
 			pattern = Pattern.compile(patternToMatch);
 
-			// Now create matcher object.
 			Matcher matcher = pattern.matcher(response);
 			while (matcher.find()) {
 				for(int cnt=1;cnt<10;cnt++) {
 					try {
 						patternValue = matcher.group(cnt);
+						patternValue = patternValue.replace("(", "");
+						patternValue = patternValue.replace(")", "");
 						matchesFound.add(patternValue);
 					} catch(Exception e) {
 
@@ -237,7 +239,7 @@ public class PDFReader {
 		return matchesFound;
 	}
 
-	public void createFeatureFile(String fileName, ArrayList<String> scenarios) {
+	public void createFeatureFile(String fileName, ArrayList<String> scenarios, ArrayList<String> examplesList) {
 		try {
 			File file = new File("./src/test/java/Features/"+fileName+".feature");
 			FileWriter fr = new FileWriter(file, true);
@@ -257,9 +259,100 @@ public class PDFReader {
 				}
 				fr.write("\n");
 			}
+			fr.write("\n");
+			if(examplesList.size()>0) {
+				fr.write("\t\tExamples: ");
+				String examples = "| ";
+				for(int cnt=0;cnt<examplesList.size();cnt++) {
+					examples = examples + examplesList.get(cnt)+" | ";
+				}
+				fr.write("\n");
+				fr.write("\t\t\t" + examples);
+				examples="| ";
+				for(int cnt=0;cnt<examplesList.size();cnt++) {
+					examples = examples +"dummy value" + (cnt+1)+" | ";
+				}
+				fr.write("\n");
+				fr.write("\t\t\t" + examples);
+				fr.write("\n");
+			}
 			fr.close();
+
+			System.out.println("Feature file created for: " +fileName +" at ./src/test/java/Features/"+fileName+".feature");
 		} catch(Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	public void generateStepDefinitions() {
+		try {
+			File file = new File(".");
+			String baseDirPath = file.getCanonicalPath();
+
+			ProcessBuilder processBuilder = new ProcessBuilder();
+
+			processBuilder.command("bash", "-c", "java -cp "+baseDirPath+"/target/AutoGeneratedGherkinScripts-jar-with-dependencies.jar org.junit.runner.JUnitCore runner.TestRunner");
+
+			try {
+
+				Process process = processBuilder.start();
+
+				StringBuilder output = new StringBuilder();
+
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(process.getInputStream()));
+
+				String line;
+				boolean printLine = false;
+				while ((line = reader.readLine()) != null) {
+					if(line.trim().contains("OK") | line.trim().contains("Time")) {
+						break;
+					}
+					if(line.trim().equalsIgnoreCase("You can implement missing steps with the snippets below:")) {
+						printLine = true;
+						continue;
+					}
+					if(printLine) {
+						if(line.trim().length()==0) {
+							output.append("\n");
+							continue;
+						}
+						output.append(line + "\n");
+					}
+				}
+
+				int exitVal = process.waitFor();
+				if (exitVal == 0) {
+					String javaFileContents = "package definitions;\n" + 
+							"\n" + 
+							"import cucumber.api.PendingException;\n" + 
+							"import cucumber.api.java.en.Given;\n" + 
+							"import cucumber.api.java.en.Then;\n" + 
+							"import cucumber.api.java.en.When;\n" + 
+							"\n" + 
+							"public class StepDefinitions {\n" + 
+							"\n" + 
+							"//<STEPDEFINITION>\n" + 
+							"\n" + 
+							"\n" + 
+							"}";
+					FileWriter fr = new FileWriter(new File(baseDirPath+"/src/test/java/definitions/stepdefinitions.java"));
+					String contents = javaFileContents.toString().replace("//<STEPDEFINITION>", output);
+					fr.write(contents);
+					fr.close();
+
+					System.out.println("Step Definitions generated for .feature files at /src/test/java/definitions/stepdefinitions.java file");
+				} else {
+					System.out.println("Something went wrong in step definitions creation");
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		} catch(Exception e) {
+
 		}
 	}
 }
