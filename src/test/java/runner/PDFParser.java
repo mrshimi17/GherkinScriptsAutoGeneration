@@ -130,7 +130,16 @@ public class PDFParser {
 						if(line.length()==0) {
 							continue;
 						} else if(scenarioCounter < scenarioList.length-1) {
-							if(line.equalsIgnoreCase(scenarioList[scenarioCounter+1])) {
+							if(fileName.equalsIgnoreCase("TS26")) {
+								if(line.contains(scenarioList[scenarioCounter+1])) {
+									createFeatureFile(fileName, scenarios, examplesList);
+									scenarios.clear();
+									examplesList.clear();
+									scenarioStarted = false;
+									scenarioCounter++;
+									param=0;
+								}
+							} else if(line.equalsIgnoreCase(scenarioList[scenarioCounter+1])) {
 								createFeatureFile(fileName, scenarios, examplesList);
 								scenarios.clear();
 								examplesList.clear();
@@ -139,7 +148,12 @@ public class PDFParser {
 								param=0;
 							}
 						} 
-						if(line.equalsIgnoreCase(scenarioList[scenarioCounter])) {
+						if(fileName.equalsIgnoreCase("TS26")) {
+							if(line.contains(scenarioList[scenarioCounter])) {
+								scenarioStarted=true;
+								scenarios.add("Scenario Outline: " + line);	
+							}
+						} else if(line.equalsIgnoreCase(scenarioList[scenarioCounter])) {
 							scenarioStarted=true;
 							scenarios.add("Scenario Outline: " + line);
 						}
