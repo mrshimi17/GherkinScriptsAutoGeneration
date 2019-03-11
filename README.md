@@ -4,8 +4,8 @@ Deployment Guide
 ### Description
 
 ## Prerequisites
-1. Java 1.8
-2. Maven
+1.  Java 1.8
+2.  Maven
 
 
 ## Local Deployment
@@ -29,6 +29,7 @@ public void the_user_clicks(String arg1) throws Throwable {
     // Write code here that turns the phrase above into concrete actions
     throw new PendingException();
 }
+6.  Verify the .feature files and stepdefinition.java file by opening them in eclipse.
 ```
 
 ## Production Build and Installation
