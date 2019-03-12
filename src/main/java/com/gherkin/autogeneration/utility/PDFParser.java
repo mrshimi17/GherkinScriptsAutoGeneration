@@ -1,4 +1,4 @@
-package runner;
+package com.gherkin.autogeneration.utility;
 
 import java.io.BufferedReader;
 import java.io.File;
